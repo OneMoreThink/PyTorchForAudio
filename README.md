@@ -65,9 +65,7 @@ if __name__ == "__main__":
         DataLoader(train_data, batch_size=BATCH_SIZE)
 ```
 
-### DataLoader의 역할과 Batch_Size 의미 및 고려사항 
-`DataLoader`와 `batch_size`에 대해 자세히 설명해 드리겠습니다.
-
+### DataLoader의 역할과 Batch_Size 의미 및 고려사항
 - DataLoader의 역할:
    - 데이터셋을 반복 가능한 객체로 감싸는 래퍼(wrapper).
    - 데이터를 배치 단위로 로드하고, 셔플링, 병렬 로딩, 메모리 핀닝 등의 기능을 제공.
