@@ -113,7 +113,7 @@ if __name__ == "__main__":
 > batch_size 조정은 실험과 경험을 통해 최적값을 찾는 것이 중요.
 > 일반적으로 가능한 큰 batch_size를 사용하되, 메모리 한계와 일반화 성능을 고려하여 조정.
 
-** 3. build model**
+**3. build model**
 ```python
 class FeedForwardNet(nn.Module):
     def __init__(self):
