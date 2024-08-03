@@ -112,3 +112,56 @@ if __name__ == "__main__":
 
 > batch_size 조정은 실험과 경험을 통해 최적값을 찾는 것이 중요.
 > 일반적으로 가능한 큰 batch_size를 사용하되, 메모리 한계와 일반화 성능을 고려하여 조정.
+
+** 3. build model**
+```python
+class FeedForwardNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.flatten = nn.Flatten()
+        self.dense = nn.Sequential(
+            nn.Linear(28*28, 256),
+            nn.ReLU(),
+            nn.Linear(256, 10)
+        )
+        self.softmax = nn.LogSoftmax(dim=1)
+
+    def forward(self, input_data):
+        flatten_data = self.flatten(input_data)
+        logits = self.dense(flatten_data)
+        predictions = self.softmax(logits)
+        return  predictions
+```
+- `FeedForwardNet(nn.Module)` : nn.Module을 상속받아 PyTorch 신경망 모듈을 정의 
+- `self.flateen = nn.Flatten()` 
+  - 입력 데이터를 1차원으로 평탄화 
+  - MNIST 이미지(28x28)를 784(28*28) 크기의 1차원 벡터로 변환 
+- `self.dense` : 신경망 모델에서 fully connected layer의 sequence를 나타냄 
+  - `nn.Sequential` : 여러 layer를 순차적으로 쌓을 수 있게 해주는 container , layer의 출력이 다음 layer의 입력이 됨
+  - `nn.Linear(28*28, 256)` : 입력 28*28(784), 출력 256 입력 layer
+  - `nn.ReLU()`활성화 함수로, 비선형성을 도입 -> f(x) = max(0, x)
+  - `nn.Linear(256, 10)` : 입력 256, 출력 10개인 출력 layer 
+
+### ReLU(Rectified Linear Unit) 함수의 역할
+1. 기본 정의:
+   - f(x) = max(0, x)
+   - 입력이 0보다 작으면 0을 출력, 0 이상이면 입력을 그대로 출력
+2. 비선형성 도입:
+   - 신경망에 비선형성을 추가하여 복잡한 패턴을 학습할 수 있도록 함
+   - 선형 변환의 연속만으로는 표현할 수 없는 함수들을 근사를 가능케 함
+3. 기울기 소실 문제 완화:
+   - 양수 입력에 대해 기울기가 항상 1이므로, 깊은 신경망에서도 기울기가 잘 전파
+4. 희소성(Sparsity) 촉진:
+   - 음수 입력을 0으로 만들어 네트워크의 희소성(sparsity)을 증가
+   - 이는 일부 뉴런만 활성화되어 과적합을 줄이는 데 도움
+5. 경사 하강법 최적화:
+   - 양의 구간에서 기울기가 상수이므로 최적화가 안정적
+
+-  `self.softmax = nn.LogSoftmax(dim=1` : 
+  - 머신러닝 모델의 출력을 해석 가능한 확률로 변환하는 도구
+  - 특히 분류 문제에서 각 클래스에 속할 확률을 계산하는 데 사용
+
+- `def forward`
+  - forward 구조의 신경망 정의 
+  - 입력 → 평탄화 → 완전연결층 → 소프트맥스 의 순서로 데이터가 처리
+  - 소프트맥스를 사용하여 최종 출력을 확률로 해석할 수 있게 만듬
