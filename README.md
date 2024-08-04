@@ -165,3 +165,44 @@ class FeedForwardNet(nn.Module):
   - forward 구조의 신경망 정의 
   - 입력 → 평탄화 → 완전연결층 → 소프트맥스 의 순서로 데이터가 처리
   - 소프트맥스를 사용하여 최종 출력을 확률로 해석할 수 있게 만듬
+
+**4. train model** 
+
+```python
+def train_one_epoch(model, data_loader, loss_fn, optimizer, device):
+    for input, target in data_loader:
+        input, target = input.to(device), target.to(device)
+
+        # calculate loss
+        predictions = model(input)
+        loss = loss_fn(predictions, target)
+
+        # backpropagation loss update weights
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    print(f'Loss: {loss.item():.4f}')
+
+    
+def train(model, data_loader, loss_fn, optimizer, device, epochs):
+    for i in range(epochs):
+        print(f'Epoch {i+1}')
+        train_one_epoch(model,data_loader,loss_fn,optimizer,device)
+        print("------------------")
+print("Training is Done")
+
+```
+- `train_one_epoch()` : 한 에포크 동안의 훈련과정을 정의 
+- `for input, target in data_loader`: data_loader가 배치 단위로 입력데이터와 레이블을 제공
+- `.to(device)` : 저정한 device로 데이터를 이동 
+- `predictions = model(input)` : model에 데이터를 넣어 예측값을 얻고
+- `loss = loss_fn(predictions, target)` : 손실 함수를 이용해 loss값을 계산 
+- `optimizer.zero_grad()`: gradient 누적을 방지 (각 반복마다 독립적인 gradient 계산)
+
+
+### epoch란?
+- 정의: 전체 훈련 데이터셋에 대해 한 번의 완전한 학습 주기를 의미
+- 과정:모든 훈련 샘플이 한 번씩 신경망을 통과하여 순전파(forward pass)와 역전파(backward pass)를 거침
+- 목적: 모델이 전체 데이터셋의 패턴을 학습할 기회를 제공, 여러 에포크를 거치면서 모델의 성능이 점진적으로 개선
+- 예시: 10,000개의 훈련 샘플이 있고 배치 크기가 100이라면, 1 에포크는 100번의 배치 처리로 구성
+
